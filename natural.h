@@ -18,7 +18,8 @@ File:	natural.h
 #define	SAFE_FREE(X)\
 	do { if((X) != NULL) {free(X); X=NULL;} } while(0)
 
-typedef unsigned uint;
+#define	uint		unsigned
+#define	iterator	int
 
 class natural {
 private:

@@ -25,7 +25,7 @@ natural::natural(uint sz)
 		exit(1);
 
 	bool* ptr = value;
-	for (uint i = 0; i < size; ++i)
+	for (iterator i = 0; i < size; ++i)
 		*(ptr + i) = 0;
 }
 
@@ -42,8 +42,8 @@ natural::natural()
 		exit(1);
 
 	bool* ptr = value;
-	for (uint i = 0; i < _DEFAULT_SIZE_; ++i)
-		*(ptr++) = 0;
+	for (iterator i = 0; i < _DEFAULT_SIZE_; ++i)
+		*(ptr + i) = 0;
 
 }
 
@@ -62,8 +62,8 @@ natural::natural(const natural& other)
 	bool* ptr_1 = value;
 	bool* ptr_2 = other.value;
 
-	for (uint i = 0; i < size; ++i)
-		*(ptr_1++) = *(ptr_2++);
+	for (iterator i = 0; i < size; ++i)
+		*(ptr_1 + i) = *(ptr_2 + i);
 
 }
 
@@ -82,8 +82,8 @@ void natural::print_bin()
 {
 	std::cout << ">> 0b";
 	bool* ptr = value;
-	for (uint i = 0; i < size; ++i) {
-		if (*ptr++)		std::cout << "1";
+	for (iterator i = 0; i < size; ++i) {
+		if (*(ptr + i))		std::cout << "1";
 		else			std::cout << "0";
 	}
 	std::cout << std::endl;
@@ -96,8 +96,8 @@ void natural::print_dec()
 	bool* ptr = value;
 	uint dec = 0;
 	std::cout << ">> 0d";
-	for (uint i = 0; i < size; ++i)
-		if (*ptr++)	dec += pow(2, i);
+	for (iterator i = 0; i < size; ++i)
+		if (*(ptr + i))	dec += pow(2, i);
 	std::cout << uint(dec) << std::endl;
 }
 
@@ -142,8 +142,8 @@ natural& natural::operator=(const natural& other)
 	bool* ptr_1 = value;
 	bool* ptr_2 = other.value;
 
-	for (uint i = 0; i < size; ++i) {
-		*(ptr_1++) = *(ptr_2++);
+	for (iterator i = 0; i < size; ++i) {
+		*(ptr_1 + i) = *(ptr_2 + i);
 	}
 
 	return *this;
@@ -156,9 +156,9 @@ natural natural::operator<<(const uint shift)
 	bool* ptr_result = leftshifted.value;
 	bool* ptr = value;
 
-	for (uint i = 0; i < shift; ++i)
+	for (iterator i = 0; i < shift; ++i)
 		*(ptr_result++) = 0;
-	for (uint i = 0; i < size - shift; ++i)
+	for (iterator i = 0; i < size - shift; ++i)
 		*(ptr_result++) = *(ptr++);
 
 	return leftshifted;
@@ -171,11 +171,11 @@ natural natural::operator>>(const uint shift)
 	bool* ptr_result = rightshifted.value;
 	bool* ptr = value;
 
-	for (uint i = 0; i < shift; ++i)
+	for (iterator i = 0; i < shift; ++i)
 		ptr++;
-	for (uint i = 0; i < size - shift; ++i)
+	for (iterator i = 0; i < size - shift; ++i)
 		*(ptr_result++) = *(ptr++);
-	for (uint i = 0; i < shift; ++i)
+	for (iterator i = 0; i < shift; ++i)
 		*(ptr_result++) = 0;
 
 	return rightshifted;
@@ -186,8 +186,8 @@ natural natural::operator~()
 	natural negate(size);
 	bool* ptr_result = negate.value;
 	bool* ptr = value;
-	for (uint i = 0; i < size; ++i)
-		*(ptr_result++) = !(*(ptr++));
+	for (iterator i = 0; i < size; ++i)
+		*(ptr_result + i) = !(*(ptr + i));
 	return negate;
 }
 
@@ -204,7 +204,7 @@ bool natural::operator>(const natural& other)
 	gtb = ~b;
 	gtb = gtb & a;
 
-	for (uint i = 1; i < size; i*=2) {
+	for (iterator i = 1; i < size; i*=2) {
 		tmp = ltb >> i;
 		ltb = ltb | tmp;
 	}
@@ -212,7 +212,7 @@ bool natural::operator>(const natural& other)
 	tmp = ~ltb;
 	isGt = gtb & tmp;
 
-	for (uint i = 1; i < size; i*=2) {
+	for (iterator i = 1; i < size; i*=2) {
 		tmp = isGt >> i;
 		isGt = isGt | tmp;
 	}
@@ -227,8 +227,8 @@ bool natural::operator==(const natural& other)
 	bool* ptr_1 = value;
 	bool* ptr_2 = other.value;
 
-	for (uint i = 0; i < size; ++i) {
-		if ((*(ptr_1++)) != (*(ptr_2++)))
+	for (iterator i = 0; i < size; ++i) {
+		if ((*(ptr_1 + i)) != (*(ptr_2 + i)))
 			return false;
 	}
 
@@ -242,8 +242,8 @@ bool natural::operator!=(const natural& other)
 	bool* ptr_1 = value;
 	bool* ptr_2 = other.value;
 
-	for (uint i = 0; i < size; ++i) {
-		if ((*(ptr_1++)) != (*(ptr_2++)))
+	for (iterator i = 0; i < size; ++i) {
+		if ((*(ptr_1 + i)) != (*(ptr_2 + i)))
 			return true;
 	}
 
@@ -278,8 +278,8 @@ natural natural::operator|(const natural& other)
 	bool* ptr_2 = other.value;
 	bool* ptr_result = logicor.value;
 
-	for (uint i = 0; i < size; ++i)
-		*(ptr_result++) = *(ptr_1++) | *(ptr_2++);
+	for (iterator i = 0; i < size; ++i)
+		*(ptr_result + i) = *(ptr_1 + i) | *(ptr_2 + i);
 
 	return logicor;
 }
@@ -294,8 +294,8 @@ natural natural::operator&(const natural& other)
 	bool* ptr_2 = other.value;
 	bool* ptr_result = logicand.value;
 
-	for (uint i = 0; i < size; ++i)
-		*(ptr_result++) = *(ptr_1++) & *(ptr_2++);
+	for (iterator i = 0; i < size; ++i)
+		*(ptr_result + i) = *(ptr_1 + i) & *(ptr_2 + i);
 
 	return logicand;
 }
@@ -313,11 +313,11 @@ natural natural::operator+(const natural& other)
 	bool* ptr_2 = other.value;
 	bool* ptr_result = sum.value;
 
-	for(uint i = 0; i < size; ++i) {
-		a = *(ptr_1++);
-		b = *(ptr_2++);
+	for(iterator i = 0; i < size; ++i) {
+		a = *(ptr_1 + i);
+		b = *(ptr_2 + i);
 		d = a ^ b;
-		*(ptr_result++) = d ^ carry;
+		*(ptr_result + i) = d ^ carry;
 		carry = (d & carry) | (a & b);
 	}
 
@@ -341,11 +341,11 @@ natural natural::operator-(const natural& other)
 	bool* ptr_2 = other.value;
 	bool* ptr_result = sub.value;
 
-	for(uint i = 0; i < size; ++i) {
-		a = *(ptr_1++);
-		b = *(ptr_2++);
+	for(iterator i = 0; i < size; ++i) {
+		a = *(ptr_1 + i);
+		b = *(ptr_2 + i);
 		d = a ^ b;
-		*(ptr_result++) = d ^ borrow;
+		*(ptr_result + i) = d ^ borrow;
 		borrow = (!d & borrow) | (!a & b);
 	}
 
@@ -365,8 +365,8 @@ natural natural::operator*(const natural& other)
 
 	bool* ptr = other.value;
 
-	for (uint i = 0; i < size; ++i) {
-		if (*(ptr++))
+	for (iterator i = 0; i < size; ++i) {
+		if (*(ptr + i))
 			multiplier += (a << i);
 	}
 
@@ -391,7 +391,7 @@ natural natural::operator/(const natural& other)
 
 	bool tmp_bit;
 	uint e = 0;
-	for (uint i = size - 1; e < size; --i, e++) {
+	for (iterator i = size - 1; e < size; --i, e++) {
 		tmp_bit = dividend[i];
 		remaind[0] = tmp_bit;
 
@@ -426,7 +426,7 @@ natural natural::operator%(const natural& other)
 
 	bool tmp_bit;
 	uint e = 0;
-	for (uint i = size - 1; e < size; --i, e++) {
+	for (iterator i = size - 1; e < size; --i, e++) {
 		tmp_bit = dividend[i];
 		remaind[0] = tmp_bit;
 
