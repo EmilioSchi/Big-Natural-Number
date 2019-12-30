@@ -12,13 +12,15 @@ File:	natural.cc
 
 #include "natural.h"
 
-natural::natural(uint sz)
+natural::natural(const int quantity)
 {
+	ASSERT(quantity >= 8);
+
 	#if _DEBUG_
 		std::cout << "[DEBUG] Allocation of new Number of " <<  uint(sz) << " bits @ "<< this << std::endl;
 	#endif
 
-	size = sz;
+	size = quantity;
 
 	value = (bool*) malloc(sizeof(bool) * size);
 	if (!value)
@@ -72,7 +74,7 @@ natural::~natural()
 	SAFE_FREE(value);
 }
 
-uint natural::getsize()
+int natural::getsize()
 {
 	return size;
 }
@@ -112,7 +114,7 @@ natural::proxy::operator bool() const {
 }
 
 
-natural::proxy natural::operator[](const uint index)
+natural::proxy natural::operator[](const int index)
 {
 	ASSERT(index >= (uint)0 && index < size);
 	return proxy(this, index);
@@ -149,8 +151,9 @@ natural& natural::operator=(const natural& other)
 	return *this;
 }
 
-natural natural::operator<<(const uint shift)
+natural natural::operator<<(const int shift)
 {
+	ASSERT(shift > 0);
 	natural leftshifted(size);
 
 	bool* ptr_result = leftshifted.value;
@@ -164,8 +167,9 @@ natural natural::operator<<(const uint shift)
 	return leftshifted;
 }
 
-natural natural::operator>>(const uint shift)
+natural natural::operator>>(const int shift)
 {
+	ASSERT(shift > 0);
 	natural rightshifted(size);
 
 	bool* ptr_result = rightshifted.value;
@@ -184,10 +188,13 @@ natural natural::operator>>(const uint shift)
 natural natural::operator~()
 {
 	natural negate(size);
+
 	bool* ptr_result = negate.value;
 	bool* ptr = value;
+
 	for (iterator i = 0; i < size; ++i)
 		*(ptr_result + i) = !(*(ptr + i));
+
 	return negate;
 }
 

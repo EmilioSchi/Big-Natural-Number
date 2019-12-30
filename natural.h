@@ -24,11 +24,11 @@ File:	natural.h
 class natural {
 private:
 	bool* value;
-	uint size;
+	int size;
 public:
 	// Constructor
 	natural ();
-	natural (uint);
+	natural (const int);
 
 	// Copy Constructor
 	natural(const natural& source);
@@ -39,22 +39,22 @@ public:
 	// Utility
 	void print_bin ();
 	void print_dec();
-	uint getsize();
+	int getsize();
 
 	// Overloading
 	struct proxy
 	{
 		natural *a;
-		uint idx;
-		proxy(natural *a, uint idx) : a(a), idx(idx) {}
+		int idx;
+		proxy(natural *a, int idx) : a(a), idx(idx) {}
 		bool& operator= (const bool);
 		operator bool() const;
 	};
 
-	proxy operator[] (const uint);
+	proxy operator[] (const int);
 	natural& operator= (const natural&);
-	natural operator<< (const uint);
-	natural operator>> (const uint);
+	natural operator<< (const int);
+	natural operator>> (const int);
 	natural operator~ ();
 	bool operator> (const natural&);
 	bool operator< (const natural&);
