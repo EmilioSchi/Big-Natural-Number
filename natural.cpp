@@ -52,7 +52,6 @@ natural::natural()
 	bool* ptr = value;
 	for (iterator i = 0; i < _DEFAULT_SIZE_; ++i)
 		*(ptr + i) = 0;
-
 }
 
 natural::natural(const natural& other)
@@ -80,8 +79,8 @@ natural::natural(const natural& other)
 
 natural::~natural()
 {
-	//SAFE_FREE(value);
-	delete [] value;
+	SAFE_FREE(value);
+	//delete [] value;
 }
 
 iterator natural::getsize()
@@ -225,7 +224,7 @@ natural natural::operator~()
 
 bool natural::operator>(const natural& other)
 {
-	natural ltb(size), gtb(size), tmp(size), isGt(size);
+	natural ltb(size), gtb(size), isGt(size);
 
 	natural a(size);
 	natural b(size);
@@ -233,28 +232,17 @@ bool natural::operator>(const natural& other)
 	a = *this;
 	b = other;
 
-	//ltb = ~a;
-	//ltb = ltb & b;
 	ltb = (~a) & b;
-
-	//gtb = ~b;
-	//gtb = (gtb) & a;
 	gtb = (~b) & a;
 
-	for (iterator i = 1; i < size; i *= 2) {
-		//tmp = ltb >> i;
-		//ltb = ltb | tmp;
+	for (iterator i = 1; i < size; i *= 2)
 		ltb = ltb | (ltb >> i);
-	}
 
-	//tmp = ~ltb;
-	//isGt = gtb & tmp;
 	isGt = gtb & (~ltb);
 
-	for (iterator i = 1; i < size; i*=2) {
-		tmp = isGt >> i;
-		isGt = isGt | tmp;
-	}
+	for (iterator i = 1; i < size; i *= 2)
+		isGt = isGt | (isGt >> i);
+
 
 	return isGt[0];
 }
@@ -313,8 +301,8 @@ natural natural::operator|(const natural& other)
 
 	natural logicor(size);
 
-	bool* ptr_1 = value;
-	bool* ptr_2 = other.value;
+	bool* ptr_1	 = value;
+	bool* ptr_2	 = other.value;
 	bool* ptr_result = logicor.value;
 
 	for (iterator i = 0; i < size; ++i)
@@ -329,8 +317,8 @@ natural natural::operator&(const natural& other)
 
 	natural logicand(size);
 
-	bool* ptr_1 = value;
-	bool* ptr_2 = other.value;
+	bool* ptr_1	 = value;
+	bool* ptr_2	 = other.value;
 	bool* ptr_result = logicand.value;
 
 	for (iterator i = 0; i < size; ++i)
@@ -348,9 +336,9 @@ natural natural::operator+(const natural& other)
 	bool a, b, d;
 	bool carry = 0;
 
-	bool* ptr_1 = value;
-	bool* ptr_2 = other.value;
-	bool* ptr_result = sum.value;
+	bool* ptr_1		 = value;
+	bool* ptr_2		 = other.value;
+	bool* ptr_result	 = sum.value;
 
 	for(iterator i = 0; i < size; ++i) {
 		a = *(ptr_1 + i);
@@ -376,8 +364,8 @@ natural natural::operator-(const natural& other)
 	bool a, b, d;
 	bool borrow = 0;
 
-	bool* ptr_1 = value;
-	bool* ptr_2 = other.value;
+	bool* ptr_1	 = value;
+	bool* ptr_2	 = other.value;
 	bool* ptr_result = sub.value;
 
 	for(iterator i = 0; i < size; ++i) {
@@ -490,6 +478,67 @@ natural natural::operator%(const natural& other)
 
 	return remaind;
 }
+
+natural natural::operator++(int)
+{
+	natural sum(size);
+
+	bool a, b, d;
+	bool carry = 0;
+
+	bool* ptr		 = value;
+	bool* ptr_result	 = sum.value;
+
+	b = 1;
+	for(iterator i = 0; i < size; ++i) {
+		a = *(ptr + i);
+		d = a ^ b;
+		*(ptr_result + i) = d ^ carry;
+		*(ptr + i) = *(ptr_result + i);
+		carry = (d & carry) | (a & b);
+		b = 0;
+		if (carry == 0)
+			break;
+	}
+
+	// OVERFLOW
+	ASSERT(carry != 1);
+
+	return sum;
+}
+
+
+natural natural::operator--(int)
+{
+	natural zero(size);
+	ASSERT(*this != zero);
+
+	natural sub(size);
+
+	bool a, b, d;
+	bool borrow = 0;
+
+	bool* ptr	 = value;
+	bool* ptr_result = sub.value;
+
+	b = 1;
+	for(iterator i = 0; i < size; ++i) {
+		a = *(ptr + i);
+		d = a ^ b;
+		*(ptr_result + i) = d ^ borrow;
+		*(ptr + i) = *(ptr_result + i);
+		borrow = (!d & borrow) | (!a & b);
+		b = 0;
+		if (borrow == 0)
+			break;
+	}
+
+	// OVERFLOW
+	ASSERT(borrow != 1);
+
+	return sub;
+}
+
 
 natural natural::operator+=(const natural& other)
 {

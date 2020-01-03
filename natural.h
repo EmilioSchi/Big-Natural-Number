@@ -74,7 +74,8 @@ public:
 	natural operator*= (const natural&);
 	natural operator/= (const natural&);
 	natural operator%= (const natural&);
-
+	natural operator++ (int);
+	natural operator-- (int);
 };
 
 #endif /* _NATURAL_H_ */
