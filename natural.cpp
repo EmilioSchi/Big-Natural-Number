@@ -106,7 +106,6 @@ void natural::print_dec()
 bool& natural::proxy::operator=(const bool v)
 {
 	ASSERT(v == 0 || v == 1);
-
 	a->value[idx] = v;
 	return a->value[idx];
 }
@@ -155,34 +154,45 @@ natural& natural::operator=(const natural& other)
 
 natural natural::operator<<(const iterator shift)
 {
-	ASSERT(shift > 0);
+	ASSERT(shift >= (iterator)0);
+	if (shift == (iterator)0)
+		return *this;
+
 	natural leftshifted(size);
 
 	bool* ptr_result = leftshifted.value;
 	bool* ptr = value;
 
-	for (iterator i = 0; i < shift; ++i)
-		*(ptr_result++) = 0;
-	for (iterator i = 0; i < size - shift; ++i)
-		*(ptr_result++) = *(ptr++);
+	iterator i = 0;
+	for (; i < shift; ++i)
+		*(ptr_result + i) = 0;
+	for (iterator e = 0; e < size - shift; ++e, ++i)
+		*(ptr_result + i) = *(ptr + e);
 
 	return leftshifted;
 }
 
 natural natural::operator>>(const iterator shift)
 {
-	ASSERT(shift > 0);
+	ASSERT(shift >= (iterator)0);
+	if (shift == (iterator)0)
+		return *this;
+
 	natural rightshifted(size);
 
 	bool* ptr_result = rightshifted.value;
 	bool* ptr = value;
 
-	for (iterator i = 0; i < shift; ++i)
-		ptr++;
-	for (iterator i = 0; i < size - shift; ++i)
-		*(ptr_result++) = *(ptr++);
-	for (iterator i = 0; i < shift; ++i)
-		*(ptr_result++) = 0;
+	iterator i = 0;
+	iterator e = 0;
+
+	for (; i < shift; ++i) {}
+	for (; e < size - shift; ++e, ++i){
+		*(ptr_result + e) = *(ptr + i);
+	}
+	for (i = 0; i < shift; ++e, ++i) {
+		*(ptr_result + e) = 0;
+	}
 
 	return rightshifted;
 }
@@ -204,22 +214,28 @@ bool natural::operator>(const natural& other)
 {
 	natural ltb(size), gtb(size), tmp(size), isGt(size);
 
-	natural a = *this;
-	natural b = other;
+	natural a;
+	natural b;
 
-	ltb = ~a;
-	ltb = ltb & b;
+	a = *this;
+	b = other;
 
-	gtb = ~b;
-	gtb = gtb & a;
+	//ltb = ~a;
+	//ltb = ltb & b;
+	ltb = (~a) & b;
+
+	//gtb = ~b;
+	//gtb = (gtb) & a;
+	gtb = (~b) & a;
 
 	for (iterator i = 1; i < size; i*=2) {
 		tmp = ltb >> i;
 		ltb = ltb | tmp;
 	}
 
-	tmp = ~ltb;
-	isGt = gtb & tmp;
+	//tmp = ~ltb;
+	//isGt = gtb & tmp;
+	isGt = gtb & (~ltb);
 
 	for (iterator i = 1; i < size; i*=2) {
 		tmp = isGt >> i;
@@ -304,7 +320,7 @@ natural natural::operator&(const natural& other)
 	bool* ptr_result = logicand.value;
 
 	for (iterator i = 0; i < size; ++i)
-		*(ptr_result + i) = *(ptr_1 + i) & *(ptr_2 + i);
+		*(ptr_result + i) = (*(ptr_1 + i)) & (*(ptr_2 + i));
 
 	return logicand;
 }
@@ -389,6 +405,11 @@ natural natural::operator/(const natural& other)
 	natural quotient(size), remaind(size);
 	natural zero(size);
 
+//	bool* ptr_divident = value;
+//	bool* ptr_divisor = other.value;
+//	bool* ptr_quotient = quotient.value;
+//	bool* ptr_remaind = remaind.value;
+
 	natural dividend = *this;
 	natural divisor = other;
 
@@ -403,16 +424,18 @@ natural natural::operator/(const natural& other)
 	for (iterator i = size - 1; e < size; --i, e++) {
 		tmp_bit = dividend[i];
 		remaind[0] = tmp_bit;
-
+//		*ptr_remaind = *(ptr_divident + i);
 		quotient = quotient << 1;
 
 		if ((divisor == remaind) || (remaind > divisor)) {
 			remaind = remaind - divisor;
 			quotient[0] = 1;
+
 		}
 
 		remaind = remaind << 1;
 	}
+
 	//remaind = remaind >> 1;
 	return quotient;
 }
