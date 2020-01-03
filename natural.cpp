@@ -12,12 +12,12 @@ File:	natural.cc
 
 #include "natural.h"
 
-natural::natural(const int quantity)
+natural::natural(const iterator quantity)
 {
 	ASSERT(quantity >= 8);
 
 	#if _DEBUG_
-		std::cout << "[DEBUG] Allocation of new Number of " <<  uint(sz) << " bits @ "<< this << std::endl;
+		std::cout << "[DEBUG] Allocation of new Number of " <<  iterator(quantity) << " bits @ "<< this << std::endl;
 	#endif
 
 	size = quantity;
@@ -74,7 +74,7 @@ natural::~natural()
 	SAFE_FREE(value);
 }
 
-int natural::getsize()
+iterator natural::getsize()
 {
 	return size;
 }
@@ -105,6 +105,8 @@ void natural::print_dec()
 
 bool& natural::proxy::operator=(const bool v)
 {
+	ASSERT(v == 0 || v == 1);
+
 	a->value[idx] = v;
 	return a->value[idx];
 }
@@ -114,16 +116,16 @@ natural::proxy::operator bool() const {
 }
 
 
-natural::proxy natural::operator[](const int index)
+natural::proxy natural::operator[](const iterator index)
 {
-	ASSERT(index >= (uint)0 && index < size);
+	ASSERT(index >= (iterator)0 && index < size);
 	return proxy(this, index);
 }
 
 natural& natural::operator=(const natural& other)
 {
 	#if _DEBUG_
-		std::cout << "[DEBUG] Overoaded Assignent called. Number of" << uint(size) << " bits @ "<< this << std::endl;
+		std::cout << "[DEBUG] Overoaded Assignent called. Number of" << iterator(size) << " bits @ "<< this << std::endl;
 	#endif
 
 	// self assignment check
@@ -151,7 +153,7 @@ natural& natural::operator=(const natural& other)
 	return *this;
 }
 
-natural natural::operator<<(const int shift)
+natural natural::operator<<(const iterator shift)
 {
 	ASSERT(shift > 0);
 	natural leftshifted(size);
@@ -167,7 +169,7 @@ natural natural::operator<<(const int shift)
 	return leftshifted;
 }
 
-natural natural::operator>>(const int shift)
+natural natural::operator>>(const iterator shift)
 {
 	ASSERT(shift > 0);
 	natural rightshifted(size);
@@ -397,7 +399,7 @@ natural natural::operator/(const natural& other)
 		return zero;
 
 	bool tmp_bit;
-	uint e = 0;
+	iterator e = 0;
 	for (iterator i = size - 1; e < size; --i, e++) {
 		tmp_bit = dividend[i];
 		remaind[0] = tmp_bit;
@@ -432,7 +434,7 @@ natural natural::operator%(const natural& other)
 		return zero;
 
 	bool tmp_bit;
-	uint e = 0;
+	iterator e = 0;
 	for (iterator i = size - 1; e < size; --i, e++) {
 		tmp_bit = dividend[i];
 		remaind[0] = tmp_bit;

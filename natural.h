@@ -19,16 +19,16 @@ File:	natural.h
 	do { if((X) != NULL) {free(X); X=NULL;} } while(0)
 
 #define	uint		unsigned
-#define	iterator	int
+#define	iterator	size_t
 
 class natural {
 private:
 	bool* value;
-	int size;
+	iterator size;
 public:
 	// Constructor
 	natural ();
-	natural (const int);
+	natural (const iterator);
 
 	// Copy Constructor
 	natural(const natural& source);
@@ -39,22 +39,22 @@ public:
 	// Utility
 	void print_bin ();
 	void print_dec();
-	int getsize();
+	iterator getsize();
 
 	// Overloading
 	struct proxy
 	{
 		natural *a;
-		int idx;
-		proxy(natural *a, int idx) : a(a), idx(idx) {}
+		iterator idx;
+		proxy(natural *a, iterator idx) : a(a), idx(idx) {}
 		bool& operator= (const bool);
 		operator bool() const;
 	};
 
-	proxy operator[] (const int);
+	proxy operator[] (const iterator);
 	natural& operator= (const natural&);
-	natural operator<< (const int);
-	natural operator>> (const int);
+	natural operator<< (const iterator);
+	natural operator>> (const iterator);
 	natural operator~ ();
 	bool operator> (const natural&);
 	bool operator< (const natural&);
