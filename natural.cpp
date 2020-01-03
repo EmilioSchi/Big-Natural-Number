@@ -22,9 +22,12 @@ natural::natural(const iterator quantity)
 
 	size = quantity;
 
+	//value = new bool[size];
 	value = (bool*) malloc(sizeof(bool) * size);
-	if (!value)
+	if (!value){
+		std::cout << "[MEMORY] Allocation error!" << std::endl;
 		exit(1);
+	}
 
 	bool* ptr = value;
 	for (iterator i = 0; i < size; ++i)
@@ -39,9 +42,12 @@ natural::natural()
 
 	size = _DEFAULT_SIZE_;
 
-	value = (bool*) malloc(sizeof(bool) * _DEFAULT_SIZE_);
-	if (!value)
+	//value = new bool[size];
+	value = (bool*) malloc(sizeof(bool) * size);
+	if (!value){
+		std::cout << "[MEMORY] Allocation error!" << std::endl;
 		exit(1);
+	}
 
 	bool* ptr = value;
 	for (iterator i = 0; i < _DEFAULT_SIZE_; ++i)
@@ -57,9 +63,12 @@ natural::natural(const natural& other)
 
 	size = other.size;
 
+	//value = new bool[size];
 	value = (bool*) malloc(sizeof(bool) * size);
-	if (!value)
+	if (!value){
+		std::cout << "[MEMORY] Allocation error!" << std::endl;
 		exit(1);
+	}
 
 	bool* ptr_1 = value;
 	bool* ptr_2 = other.value;
@@ -71,7 +80,8 @@ natural::natural(const natural& other)
 
 natural::~natural()
 {
-	SAFE_FREE(value);
+	//SAFE_FREE(value);
+	delete [] value;
 }
 
 iterator natural::getsize()
@@ -137,8 +147,11 @@ natural& natural::operator=(const natural& other)
 
 	size = other.size;
 
+//	delete [] value;
+//	value = new bool[size];
 	value = (bool*) realloc(value, sizeof(bool) * size);
-	if (!value) {
+	if (!value){
+		std::cout << "[MEMORY] Allocation error!" << std::endl;
 		exit(1);
 	}
 
@@ -214,8 +227,8 @@ bool natural::operator>(const natural& other)
 {
 	natural ltb(size), gtb(size), tmp(size), isGt(size);
 
-	natural a;
-	natural b;
+	natural a(size);
+	natural b(size);
 
 	a = *this;
 	b = other;
@@ -228,9 +241,10 @@ bool natural::operator>(const natural& other)
 	//gtb = (gtb) & a;
 	gtb = (~b) & a;
 
-	for (iterator i = 1; i < size; i*=2) {
-		tmp = ltb >> i;
-		ltb = ltb | tmp;
+	for (iterator i = 1; i < size; i *= 2) {
+		//tmp = ltb >> i;
+		//ltb = ltb | tmp;
+		ltb = ltb | (ltb >> i);
 	}
 
 	//tmp = ~ltb;
@@ -297,7 +311,7 @@ natural natural::operator|(const natural& other)
 {
 	ASSERT(size == other.size);
 
-	natural logicor;
+	natural logicor(size);
 
 	bool* ptr_1 = value;
 	bool* ptr_2 = other.value;
@@ -313,7 +327,7 @@ natural natural::operator&(const natural& other)
 {
 	ASSERT(size == other.size);
 
-	natural logicand;
+	natural logicand(size);
 
 	bool* ptr_1 = value;
 	bool* ptr_2 = other.value;
@@ -386,7 +400,8 @@ natural natural::operator*(const natural& other)
 
 	natural multiplier(size);
 
-	natural a = *this;
+	natural a(size);
+	a = *this;
 
 	bool* ptr = other.value;
 
@@ -405,13 +420,11 @@ natural natural::operator/(const natural& other)
 	natural quotient(size), remaind(size);
 	natural zero(size);
 
-//	bool* ptr_divident = value;
-//	bool* ptr_divisor = other.value;
-//	bool* ptr_quotient = quotient.value;
-//	bool* ptr_remaind = remaind.value;
+	natural dividend(size);
+	natural divisor(size);
 
-	natural dividend = *this;
-	natural divisor = other;
+	dividend = *this;
+	divisor = other;
 
 	if (dividend == zero)
 		return zero;
@@ -424,13 +437,12 @@ natural natural::operator/(const natural& other)
 	for (iterator i = size - 1; e < size; --i, e++) {
 		tmp_bit = dividend[i];
 		remaind[0] = tmp_bit;
-//		*ptr_remaind = *(ptr_divident + i);
+
 		quotient = quotient << 1;
 
 		if ((divisor == remaind) || (remaind > divisor)) {
 			remaind = remaind - divisor;
 			quotient[0] = 1;
-
 		}
 
 		remaind = remaind << 1;
@@ -447,8 +459,11 @@ natural natural::operator%(const natural& other)
 	natural quotient(size), remaind(size);
 	natural zero(size);
 
-	natural dividend = *this;
-	natural divisor = other;
+	natural dividend(size);
+	natural divisor(size);
+
+	dividend = *this;
+	divisor = other;
 
 	if (dividend == zero)
 		return zero;

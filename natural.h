@@ -19,7 +19,7 @@ File:	natural.h
 	do { if((X) != NULL) {free(X); X=NULL;} } while(0)
 
 #define	uint		unsigned
-#define	iterator	int
+#define	iterator	size_t
 
 class natural {
 private:
