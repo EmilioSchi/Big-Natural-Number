@@ -33,8 +33,9 @@ natural::natural(const iterator quantity)
 	}
 
 	bool* ptr = value;
-	for (iterator i = 0; i < size; ++i)
-		*(ptr + i) = 0;
+	memset(ptr, 0, sizeof(bool) * size);
+//	for (iterator i = 0; i < size; ++i)
+//		*(ptr + i) = 0;
 }
 
 natural::natural()
@@ -53,8 +54,9 @@ natural::natural()
 	}
 
 	bool* ptr = value;
-	for (iterator i = 0; i < _DEFAULT_SIZE_; ++i)
-		*(ptr + i) = 0;
+	memset(ptr, 0, sizeof(bool) * size);
+//	for (iterator i = 0; i < _DEFAULT_SIZE_; ++i)
+//		*(ptr + i) = 0;
 }
 
 natural::natural(const natural& other)
@@ -94,13 +96,32 @@ iterator natural::getsize()
 // Big Endian
 void natural::print_bin()
 {
-	std::cout << ">> 0b";
+	std::string bin = "";
+
 	bool* ptr = value;
 	for (iterator i = 0; i < size; ++i) {
-		if (*(ptr + i))		std::cout << "1";
-		else			std::cout << "0";
+		if (*(ptr + i))		bin += "1";
+		else			bin += "0";
 	}
-	std::cout << std::endl;
+	std::cout << ">> 0b" << bin << std::endl;
+}
+
+void natural::print_bin(std::string format)
+{
+	if (format.compare("BE") == 0) {
+		print_bin();
+	}
+	else if(format.compare("LE") == 0) {
+		std::string bin = "";
+
+		bool* ptr = value;
+		for (iterator i = 0; i < size; ++i) {
+			if (*(ptr + i))		bin += "1";
+			else			bin += "0";
+		}
+		reverse(bin.begin(),bin.end());
+		std::cout << ">> 0b" << bin << std::endl;
+	}
 }
 
 std::string natural::int2str(int number){
@@ -172,10 +193,43 @@ natural::proxy natural::operator[](const iterator index)
 	return proxy(this, index);
 }
 
+natural& natural::operator=(unsigned long long number)
+{
+	#if _DEBUG_
+		std::cout << "[DEBUG] Overoaded Assignent called. Assignent of "<< number <<". Number of" << iterator(size) << " bits @ "<< this << std::endl;
+	#endif
+
+	bool* ptr = value;
+
+
+	if (number == 0) {
+		memset(ptr, 0, sizeof(bool) * size);
+		return *this;
+	}
+	else if (number == 1) {
+		memset(ptr, 0, sizeof(bool) * size);
+		*ptr = 1;
+		return *this;
+	}
+	else {
+		iterator i = 0;
+		do {
+			if ((number & 1) == 0)
+				*(ptr + i) = 0;
+			else
+				*(ptr + i) = 1;
+			number >>= 1;
+			i++;
+		} while (number);
+    	//reverse(result.begin(), result.end());
+		return *this;
+	}
+}
+
 natural& natural::operator=(const natural& other)
 {
 	#if _DEBUG_
-		std::cout << "[DEBUG] Overoaded Assignent called. Number of" << iterator(size) << " bits @ "<< this << std::endl;
+		std::cout << "[DEBUG] Overoaded Assignent called. Number of " << iterator(size) << " bits @ "<< this << std::endl;
 	#endif
 
 	// self assignment check

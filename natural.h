@@ -25,6 +25,9 @@ class natural {
 private:
 	bool* value;
 	iterator size;
+
+	std::string int2str(int);
+	std::string sumnumberstring(std::string a, std::string);
 public:
 	// Constructor
 	natural ();
@@ -38,8 +41,7 @@ public:
 
 	// Utility
 	void print_bin ();
-	std::string int2str(int);
-	std::string sumnumberstring(std::string a, std::string);
+	void print_bin(std::string);
 	void print_dec();
 	iterator getsize();
 
@@ -55,6 +57,7 @@ public:
 
 	proxy operator[] (const iterator);
 	natural& operator= (const natural&);
+	natural& operator=(unsigned long long);
 	natural operator<< (const iterator);
 	natural operator>> (const iterator);
 	natural operator~ ();
