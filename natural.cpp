@@ -200,14 +200,13 @@ natural& natural::operator=(unsigned long long number)
 	#endif
 
 	bool* ptr = value;
+	memset(ptr, 0, sizeof(bool) * size);
 
 
 	if (number == 0) {
-		memset(ptr, 0, sizeof(bool) * size);
 		return *this;
 	}
 	else if (number == 1) {
-		memset(ptr, 0, sizeof(bool) * size);
 		*ptr = 1;
 		return *this;
 	}
