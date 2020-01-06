@@ -8,7 +8,10 @@ File:	natural.cc
 
 #include <iostream>
 #include <cstdlib>
+#include <string>
+#include <sstream>
 #include <cmath>
+#include "print.h"
 
 #include "natural.h"
 
@@ -100,16 +103,55 @@ void natural::print_bin()
 	std::cout << std::endl;
 }
 
-// TODO CHAR DEC
+std::string natural::int2str(int number){
+	std::ostringstream strs;
+	strs << number;
+	std::string numstr = strs.str();
+	return numstr;
+}
+
+std::string natural::sumnumberstring(std::string a, std::string b)
+{
+	reverse(a.begin(),a.end());
+	reverse(b.begin(),b.end());
+	std::string sumstring = "";
+	int x, y, xy, carry = 0;
+	for (iterator i = 0; i < b.length(); ++i){
+		if(i >= a.length()) {
+			if (carry) {
+				xy = ((int)b[i] - 48) + carry;
+				carry = (int)xy / 10;
+				sumstring += int2str(xy);
+			} else {
+				sumstring += b[i];
+			}
+		} else {
+			x = (int)a[i] - 48;
+			y = (int)b[i] - 48;
+			xy = x + y + carry;
+			carry = (int)xy / 10;
+			if (carry) xy -= 10;
+			sumstring += int2str(xy);
+		}
+	}
+	if(carry) sumstring += "1";
+	reverse(sumstring.begin(),sumstring.end());
+	return sumstring;
+}
+
 void natural::print_dec()
 {
-	ASSERT(size <= 128);
+	ASSERT(size <= 5000);
+
+	std::string dec = "0";
 	bool* ptr = value;
-	uint dec = 0;
-	std::cout << ">> 0d";
-	for (iterator i = 0; i < size; ++i)
-		if (*(ptr + i))	dec += pow(2, i);
-	std::cout << uint(dec) << std::endl;
+	for (iterator i = 0; i < size; ++i) {
+		if (*(ptr + i)) {
+			dec = sumnumberstring(dec, powof2[i]);
+		}
+	}
+
+	std::cout << ">> 0d" << dec << std::endl;
 }
 
 bool& natural::proxy::operator=(const bool v)

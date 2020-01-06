@@ -38,6 +38,8 @@ public:
 
 	// Utility
 	void print_bin ();
+	std::string int2str(int);
+	std::string sumnumberstring(std::string a, std::string);
 	void print_dec();
 	iterator getsize();
 
