@@ -10,33 +10,46 @@ A tiny library to represent large numbers in C++.
 
 int main()
 {
-	const size_t bits = 256;
+#include <iostream>
+#include "natural.h"
+
+int main()
+{
+	const size_t bits = 1024;
 
 	natural a(bits);
-	natural b(bits);
 
 	// Set bit
+	a[0] = 1;
 	a[5] = 1;
-	b[10] = 1;
+	a.print_dec();
 
-	// Operation
-	b = a * b;
+	// Loop with 1024 binary digits number
+	for (natural i(bits); i < a; i++){
+		i.print_dec();
+	}
 
-	a[23] = 1;
+	natural b = a;
+	if (a == b) printf("Equal\n");
 	b += a;
+	if (b > a) printf("Greater\n");
+	if (a < b) printf("Less\n");
+	if (b != a) printf("Not Equal\n");
 
+	natural c(bits);
+	c[3] = 1;
+	a = c * b;
+	c = b + a;
 
-	a = b;
-	natural c = a;
-	//c = b / a;
+	// IT IS POSSIBLE TOO:
+	// a = b % c;
+	// a = b / c;
+	// a = b - c;
+	// a = b & c;
+	// a = b | c;
+	// a = ~b;
 
-	a.print_bin();
-	b.print_bin();
-	c.print_bin();
-
-	//(a - b).print_bin();
-
-	if(a == c) printf("True \n");
+	if(c[0]) printf("Odd number\n");
 
 	return 0;
 }
